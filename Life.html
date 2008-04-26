@@ -1,0 +1,35 @@
+<html>
+<head>
+<title>Game of Life</title>
+<script language="javascript" src="prototype.js"></script>
+<script language="javascript" src="life.js"></script>
+<link rel="stylesheet" type="text/css" href="styles.css"></link>
+</head>
+<body bgcolor="#ffffff">
+
+<h1>Game of Life</h1>
+
+<script language="javascript"><!--
+var width = 10;
+var height = 10;
+var delay = 0;
+var board = new LifeBoard(width, height);
+// --></script>
+
+<form method="get" action="">
+<input type="button" value="Single step" onClick="board.nextGeneration();">
+<input id="toggleButton" type="button" value="Resume" onClick="toggleRunning(delay);">
+<input type="button" value="Clear" onClick="clearBoard();">
+<input type="checkbox" onClick="toggleWrap();">Edges wrap
+</form>
+
+<div id="boardDiv"></div>
+<div id="logDiv"></div>
+
+<script language="javascript"><!--
+$('boardDiv').appendChild(board);
+board.glider(0, 0);
+// --></script>
+
+</body>
+</html>

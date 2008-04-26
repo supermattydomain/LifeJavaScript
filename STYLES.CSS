@@ -1,0 +1,20 @@
+table.LifeBoard {
+	width: 75%;
+	height: 75%;
+	padding: 0px;
+	border-spacing: 0px;
+	border-collapse: separate;
+	empty-cells: show;
+}
+tr.LifeRow {
+}
+td.Alive {
+	background-color: #00ff00;
+}
+td.Dead {
+	background-color: #000000;
+}
+#logDiv {
+	width: 50%;
+	float: right;
+}
