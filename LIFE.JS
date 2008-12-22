@@ -1,176 +1,198 @@
-var debug = 0;
-
-function log(text) {
-	$('logDiv').appendChild(document.createTextNode(text));
-	$('logDiv').appendChild(document.createElement('br'));
-}
-
-function clearLog() {
-	var log = $('logDiv');
-	while (log.firstChild) {
-		log.removeChild(log.firstChild);
-	}
-}
-
-function LifeCell(pLife) {
-	var td = document.createElement('td');
-	this.setLife = function(pLife) {
+var LifeCell = Class.create({
+	initialize: function(element, pLife) {
+		// showLog("LifeCell init");
+		this.element = element;
+		this.setLife(pLife);
+		// showLog("LifeCell end init");
+	},
+	setLife: function(pLife) {
 		this.life = pLife;
-		this.className = this.life ? 'Alive' : 'Dead';
-	};
-	this.setNeighbours = function(currentLife, pNeighbours) {
-		var life;
+		// this.redraw();
+	},
+	redraw: function() {
+		if (this.element) {
+			setClass(this.element, this.life ? 'Alive' : 'Dead');
+		}
+	},
+	setNeighbours: function(currentLife, pNeighbours) {
+		var newLife;
 		if (pNeighbours < 2) {
 			// death by isolation
-			life = false;
+			newLife = false;
 		} else if (2 == pNeighbours) {
 			// no change
-			life = currentLife;
+			newLife = currentLife;
 		} else if (3 == pNeighbours) {
 			// birth or survival
-			life = true;
+			newLife = true;
 		} else {
-			// death by ovecrowding
-			life = false;
+			// death by overcrowding
+			newLife = false;
 		}
-		this.setLife(life);
-	};
-	this.getLife = function() {
+		this.setLife(newLife);
+	},
+	getLife: function() {
 		return this.life;
-	};
-	this.toggleLife = function() {
+	},
+	toggleLife: function() {
 		this.setLife(!this.getLife());
-	};
-	this.onclick = function() {
+	},
+	onclick: function() {
 		this.toggleLife();
-	};
-	Object.extend(td, this);
-	td.appendChild(document.createTextNode(' '));
-	td.setLife(pLife);
-	return td;
-}
+	}
+});
 
-function LifeGrid(pWidth, pHeight) {
-	var table = document.createElement('table');
-	this.className = 'LifeBoard';
-	this.width = pWidth;
-	this.height = pHeight;
-	this.addCells = function() {
-		for (var i = 0; i < this.height; i++) {
-			row = document.createElement('tr');
-			row.className = 'LifeRow';
-			for (var j = 0; j < this.width; j++) {
-				var cell = new LifeCell();
-				row.appendChild(cell);
+var LifeGrid = Class.create({
+	initialize: function(pTable, pHeight, pWidth) {
+		showLog("LifeGrid init");
+		this.table = pTable;
+		this.width = pWidth;
+		this.height = pHeight;
+		this.addCells();
+		showLog("LifeGrid end init");
+	},
+	addCells: function() {
+		this.cells = new Array();
+		for (var row = 0; row < this.height; row++) {
+			this.cells[row] = new Array();
+			for (var col = 0; col < this.width; col++) {
+				var tableCell = this.table ? this.table.rows[row].cells[col] : null;
+				this.cells[row][col] = new LifeCell(tableCell, false);
 			}
-			this.appendChild(row);
+			// this.table.tBodies[0].appendChild(r);
 		}
-	};
-	this.getCell = function(x, y) {
-		if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
-			log('Bad coords x=' + x + ', y=' + y);
+	},
+	getCell: function(row, col) {
+		if (row < 0 || row >= this.height || col < 0 || col >= this.width) {
+			fatal('Bad coords row=' + row + ' col=' + col);
 			return undefined;
 		}
-		var rows = this.getElementsByTagName("tr");
-		var cells = rows[y].getElementsByTagName("td");
-		return cells[x];
-	};
-	this.countNeighbours = function(x, y, wrap) {
+		return this.cells[row][col];
+	},
+	countNeighbours: function(row, col, wrap) {
+		if (row < 0 || row >= this.height || col < 0 || col >= this.width) {
+			fatal('Bad coords row=' + row + ' col=' + col);
+			return 0;
+		}
 		var n = 0;
-		var xmin = x - 1, ymin = y - 1;
-		var xmax = x + 1, ymax = y + 1;
+		var colmin = col - 1, rowmin = row - 1;
+		var colmax = col + 1, rowmax = row + 1;
 		if (!wrap) {
 			// If not wrapping, clip to board edges
-			if (xmin < 0) { xmin = 0; }
-			if (ymin < 0) { ymin = 0; }
-			if (xmax >= this.width) { xmax = this.width - 1; }
-			if (ymax >= this.height) { ymax = this.height - 1; }
+			if (colmin < 0) { colmin = 0; }
+			if (rowmin < 0) { rowmin = 0; }
+			if (colmax >= this.width) { colmax = this.width - 1; }
+			if (rowmax >= this.height) { rowmax = this.height - 1; }
 		}
-		for (xx = xmin; xx <= xmax; xx++) {
-			for (yy = ymin; yy <= ymax; yy++) {
-				if (xx == x && yy == y) {
+		for (var scancol = colmin; scancol <= colmax; scancol++) {
+			for (var scanrow = rowmin; scanrow <= rowmax; scanrow++) {
+				if (scanrow == row && scancol == col) {
 					continue; // don't count self
 				}
-				var xxx = xx, yyy = yy;
+				var wrapcol = scancol, wraprow = scanrow;
 				if (wrap) {
 					// if wrapping, wrap around edges
-					if (xxx < 0) {
-						xxx += this.height;
-					} else if (xx >= this.height) {
-						xxx -= this.height;
+					if (wraprow < 0) {
+						wraprow += this.height;
+					} else if (wraprow >= this.height) {
+						wraprow -= this.height;
 					}
-					if (yyy < 0) {
-						yyy += this.height;
-					} else if (yy >= this.height) {
-						yyy -= this.height;
+					if (wrapcol < 0) {
+						wrapcol += this.width;
+					} else if (wrapcol >= this.width) {
+						wrapcol -= this.width;
 					}
 				}
-				if (this.getCell(xxx, yyy).getLife()) {
+				if (this.getCell(wraprow, wrapcol).getLife()) {
 					n++;
 				}
 			}
 		}
 		return n;
-	};
-	Object.extend(table, this);
-	table.addCells();
-	return table;
-}
+	},
+	redraw: function() {
+		if (this.table) {
+			for (var row = 0; row < this.height; row++) {
+				for (var col = 0; col < this.width; col++) {
+					this.cells[row][col].redraw();
+				}
+			}
+		}
+	}
+});
 
-function LifeBoard(width, height, wrap) {
-	var div = document.createElement('div');
-	this.wrap = !!wrap;
-	this.current = new LifeGrid(width, height);
-	this.next = new LifeGrid(width, height);
-	this.refill = function() {
-		while (this.firstChild) {
-			this.removeChild(this.firstChild);
+var LifeBoard = Class.create({
+	debug: true,
+	initialize: function(pTable, pHeight, pWidth, wrap) {
+		if (this.debug) {
+			showLog("LifeBoard init");
 		}
-		if (debug) {
-			this.appendChild(document.createTextNode('Current'));
+		this.table = pTable;
+		setClass(this.table, 'LifeBoard');
+		this.addCells(pHeight, pWidth);
+		this.wrap = !!wrap;
+		this.current = new LifeGrid(this.table, pHeight, pWidth);
+		this.next = new LifeGrid(this.table, pHeight, pWidth);
+		if (this.debug) {
+			showLog("LifeBoard end init");
 		}
-		this.appendChild(this.current);
-		if (debug) {
-			this.appendChild(document.createTextNode('Next'));
-			this.appendChild(this.next);
+	},
+	addCells: function(height, width) {
+		for (var row = 0; row < height; row++) {
+			var tableRow = this.table.insertRow(this.table.rows.length);
+			setClass(tableRow, 'LifeRow');
+			for (var col = 0; col < width; col++) {
+				var cell = tableRow.insertCell(0);
+				// Must contain something in order to be drawn properly
+				cell.appendChild(dctn(' '));
+			}
+			// this.table.tBodies[0].appendChild(r);
 		}
-	};
-	this.nextGeneration = function() {
+	},
+	redraw: function() {
+		this.current.redraw();
+	},
+	nextGeneration: function() {
 		clearLog();
 		var changed = false;
-		var x, y;
-		for (y = 0; y < this.current.height; y++) {
-			for (x = 0; x < this.current.width; x++) {
-				var n = this.current.countNeighbours(x, y, this.wrap);
-				var currentCell = this.current.getCell(x, y);
-				var nextCell = this.next.getCell(x, y);
+		var row, col;
+		for (row = 0; row < this.current.height; row++) {
+			for (col = 0; col < this.current.width; col++) {
+				var n = this.current.countNeighbours(row, col, this.wrap);
+				var currentCell = this.current.getCell(row, col);
+				var nextCell = this.next.getCell(row, col);
 				nextCell.setNeighbours(currentCell.getLife(), n);
 				if (!changed && currentCell.getLife() != nextCell.getLife()) {
 					changed = true;
 				}
-				// log('x=' + x + ', y=' + y + ', oldN=' + n + ', newLife=' + nextCell.getLife());
+				// log('row=' + row + ' col=' + col + ' oldN=' + n + ' newLife=' + nextCell.getLife());
 			}
 		}
 		var temp = this.current;
 		this.current = this.next;
 		this.next = temp;
-		this.refill();
-		return changed;
-	};
-	this.toggleWrap = function() {
-		this.wrap = !this.wrap;
-		if (debug) {
-			log('New wrap: ' + this.wrap)
+		// this.refill();
+		if (changed) {
+			this.redraw();
+		} else if (this.debug) {
+			showLog('Stable');
 		}
-	};
-	this.clear = function() {
-		for (y = 0; y < this.current.height; y++) {
-			for (x = 0; x < this.current.width; x++) {
+		return !!changed;
+	},
+	toggleWrap: function() {
+		this.wrap = !this.wrap;
+		if (this.debug) {
+			showLog('New wrap: ' + this.wrap);
+		}
+	},
+	clear: function() {
+		for (var y = 0; y < this.current.height; y++) {
+			for (var x = 0; x < this.current.width; x++) {
 				this.current.getCell(x, y).setLife(false);
 			}
 		}
-	};
-	this.glider = function(x, y) {
+	},
+	glider: function(x, y) {
 		//  X 
 		//   X
 		// XXX
@@ -185,41 +207,5 @@ function LifeBoard(width, height, wrap) {
 		this.current.getCell(x + 0, y + 2).setLife(true);
 		this.current.getCell(x + 1, y + 2).setLife(true);
 		this.current.getCell(x + 2, y + 2).setLife(true);
-	};
-	Object.extend(div, this);
-	div.refill();
-	return div;
-}
-
-var interval;
-
-function timerFunc() {
-	document.getElementById('boardDiv').firstChild.nextGeneration();
-}
-
-function startRunning(delay) {
-	interval = setInterval("timerFunc()", delay);
-}
-
-function stopRunning() {
-	clearInterval(interval);
-	interval = undefined;
-}
-
-function toggleRunning(delay) {
-	if (interval) {
-		$('toggleButton').value = 'Resume';
-		stopRunning();
-	} else {
-		$('toggleButton').value = 'Pause';
-		startRunning(delay);
 	}
-}
-
-function toggleWrap() {
-	document.getElementById('boardDiv').firstChild.toggleWrap();
-}
-
-function clearBoard() {
-	document.getElementById('boardDiv').firstChild.clear();
-}
+});

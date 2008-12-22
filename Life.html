@@ -2,6 +2,7 @@
 <head>
 <title>Game of Life</title>
 <script language="javascript" src="js-lib/prototype.js"></script>
+<script language="javascript" src="js-lib/log.js"></script>
 <script language="javascript" src="life.js"></script>
 <link rel="stylesheet" type="text/css" href="styles.css"></link>
 </head>
@@ -9,11 +10,47 @@
 
 <h1>Game of Life</h1>
 
+<div id="logDiv"></div>
+
 <script language="javascript"><!--
 var width = 10;
 var height = 10;
 var delay = 0;
-var board = new LifeBoard(width, height);
+var board;
+
+var interval;
+
+function timerFunc() {
+	board.nextGeneration();
+}
+
+function startRunning(delay) {
+	interval = setInterval("timerFunc()", delay);
+}
+
+function stopRunning() {
+	clearInterval(interval);
+	interval = undefined;
+}
+
+function toggleRunning(delay) {
+	if (interval) {
+		$('toggleButton').value = 'Resume';
+		stopRunning();
+	} else {
+		$('toggleButton').value = 'Pause';
+		startRunning(delay);
+	}
+}
+
+function toggleWrap() {
+	board.toggleWrap();
+}
+
+function clearBoard() {
+	board.clear();
+}
+
 // --></script>
 
 <form method="get" action="">
@@ -24,11 +61,15 @@ var board = new LifeBoard(width, height);
 </form>
 
 <div id="boardDiv"></div>
-<div id="logDiv"></div>
 
 <script language="javascript"><!--
-$('boardDiv').appendChild(board);
+showLog('HERE 1');
+var table = dce('table');
+$('boardDiv').appendChild(table);
+board = new LifeBoard(table, width, height, false);
+showLog('HERE 2');
 board.glider(0, 0);
+showLog('HERE 3');
 // --></script>
 
 </body>
