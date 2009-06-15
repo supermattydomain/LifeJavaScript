@@ -1,10 +1,11 @@
-var LifeCell = Class.create({
-	initialize: function(element, pLife) {
-		// showLog("LifeCell init");
-		this.element = element;
-		this.setLife(pLife);
-		// showLog("LifeCell end init");
-	},
+function LifeCell(element, pLife) {
+	// this.debugLog("LifeCell init");
+	this.element = element;
+	this.setLife(pLife);
+	// showLog("LifeCell end init");
+}
+
+LifeCell.prototype = {
 	setLife: function(pLife) {
 		this.life = pLife;
 		// this.redraw();
@@ -40,17 +41,19 @@ var LifeCell = Class.create({
 	onclick: function() {
 		this.toggleLife();
 	}
-});
+};
 
-var LifeGrid = Class.create({
-	initialize: function(pTable, pHeight, pWidth) {
-		showLog("LifeGrid init");
-		this.table = pTable;
-		this.width = pWidth;
-		this.height = pHeight;
-		this.addCells();
-		showLog("LifeGrid end init");
-	},
+function LifeGrid(pTable, pHeight, pWidth) {
+	this.setDebug(true);
+	this.debugLog("LifeGrid init");
+	this.table = pTable;
+	this.width = pWidth;
+	this.height = pHeight;
+	this.addCells();
+	this.debugLog("LifeGrid end init");
+}
+
+LifeGrid.prototype = {
 	addCells: function() {
 		this.cells = new Array();
 		for (var row = 0; row < this.height; row++) {
@@ -119,24 +122,20 @@ var LifeGrid = Class.create({
 			}
 		}
 	}
-});
+};
 
-var LifeBoard = Class.create({
-	debug: true,
-	initialize: function(pTable, pHeight, pWidth, wrap) {
-		if (this.debug) {
-			showLog("LifeBoard init");
-		}
-		this.table = pTable;
-		setClass(this.table, 'LifeBoard');
-		this.addCells(pHeight, pWidth);
-		this.wrap = !!wrap;
-		this.current = new LifeGrid(this.table, pHeight, pWidth);
-		this.next = new LifeGrid(this.table, pHeight, pWidth);
-		if (this.debug) {
-			showLog("LifeBoard end init");
-		}
-	},
+function LifeBoard(pTable, pHeight, pWidth, wrap) {
+	this.debugLog("LifeBoard init");
+	this.table = pTable;
+	setClass(this.table, 'LifeBoard');
+	this.addCells(pHeight, pWidth);
+	this.wrap = !!wrap;
+	this.current = new LifeGrid(this.table, pHeight, pWidth);
+	this.next = new LifeGrid(this.table, pHeight, pWidth);
+	this.debugLog("LifeBoard end init");
+}
+
+LifeBoard.prototype = {
 	addCells: function(height, width) {
 		for (var row = 0; row < height; row++) {
 			var tableRow = this.table.insertRow(this.table.rows.length);
@@ -165,7 +164,7 @@ var LifeBoard = Class.create({
 				if (!changed && currentCell.getLife() != nextCell.getLife()) {
 					changed = true;
 				}
-				// log('row=' + row + ' col=' + col + ' oldN=' + n + ' newLife=' + nextCell.getLife());
+				// this.debugLog('row=' + row + ' col=' + col + ' oldN=' + n + ' newLife=' + nextCell.getLife());
 			}
 		}
 		var temp = this.current;
@@ -174,16 +173,14 @@ var LifeBoard = Class.create({
 		// this.refill();
 		if (changed) {
 			this.redraw();
-		} else if (this.debug) {
-			showLog('Stable');
+		} else {
+			this.debugLog('Stable');
 		}
 		return !!changed;
 	},
 	toggleWrap: function() {
 		this.wrap = !this.wrap;
-		if (this.debug) {
-			showLog('New wrap: ' + this.wrap);
-		}
+		this.debugLog('New wrap: ' + this.wrap);
 	},
 	clear: function() {
 		for (var y = 0; y < this.current.height; y++) {
@@ -208,4 +205,4 @@ var LifeBoard = Class.create({
 		this.current.getCell(x + 1, y + 2).setLife(true);
 		this.current.getCell(x + 2, y + 2).setLife(true);
 	}
-});
+};

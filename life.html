@@ -63,13 +63,10 @@ function clearBoard() {
 <div id="boardDiv"></div>
 
 <script language="javascript"><!--
-showLog('HERE 1');
 var table = dce('table');
 $('boardDiv').appendChild(table);
 board = new LifeBoard(table, width, height, false);
-showLog('HERE 2');
 board.glider(0, 0);
-showLog('HERE 3');
 // --></script>
 
 </body>
