@@ -162,35 +162,35 @@ LifeBoard.prototype = {
 		this.debugLog('New wrap: ' + this.wrap);
 	},
 	clear: function() {
-		for (var y = 0; y < this.current.height; y++) {
-			for (var x = 0; x < this.current.width; x++) {
-				this.current.getCell(x, y).setLife(false);
+		for (var row = 0; row < this.current.height; row++) {
+			for (var col = 0; col < this.current.width; col++) {
+				this.current.getCell(row, col).setLife(false);
 			}
 		}
 	},
 	randomise: function() {
-		for (var y = 0; y < this.current.height; y++) {
-			for (var x = 0; x < this.current.width; x++) {
+		for (var row = 0; row < this.current.height; row++) {
+			for (var col = 0; col < this.current.width; col++) {
 				var random = Math.random();
-				this.current.getCell(x, y).setLife(random < 0.5);
+				this.current.getCell(row, col).setLife(random < 0.5);
 			}
 		}
 	},
-	glider: function(x, y) {
+	glider: function(row, col) {
 		//  X 
 		//   X
 		// XXX
-		this.current.getCell(x + 0, y + 0).setLife(false);
-		this.current.getCell(x + 1, y + 0).setLife(true);
-		this.current.getCell(x + 2, y + 0).setLife(false);
+		this.current.getCell(row + 0, col + 0).setLife(false);
+		this.current.getCell(row + 1, col + 0).setLife(true);
+		this.current.getCell(row + 2, col + 0).setLife(false);
 
-		this.current.getCell(x + 0, y + 1).setLife(false);
-		this.current.getCell(x + 1, y + 1).setLife(false);
-		this.current.getCell(x + 2, y + 1).setLife(true);
+		this.current.getCell(row + 0, col + 1).setLife(false);
+		this.current.getCell(row + 1, col + 1).setLife(false);
+		this.current.getCell(row + 2, col + 1).setLife(true);
 
-		this.current.getCell(x + 0, y + 2).setLife(true);
-		this.current.getCell(x + 1, y + 2).setLife(true);
-		this.current.getCell(x + 2, y + 2).setLife(true);
+		this.current.getCell(row + 0, col + 2).setLife(true);
+		this.current.getCell(row + 1, col + 2).setLife(true);
+		this.current.getCell(row + 2, col + 2).setLife(true);
 	},
 	handleClick: function(row, col) {
 		this.debugLog("LifeBoard.handleClick(" + row + ", " + col + ")");
