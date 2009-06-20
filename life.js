@@ -132,12 +132,10 @@ LifeBoard.prototype = {
 				// Work around seemingly broken hover pseudoclass in IE
 				if (Prototype.Browser.IE) {
 					cell.onmouseover = function() {
-						this.className = this.className + "Hover";
-						showLog(this.className);
+						this.className += "-hover";
 					};
 					cell.onmouseout = function() {
-						this.className = this.className.replace("Hover", "");
-						showLog(this.className);
+						this.className = this.className.replace("-hover", "");
 					};
 				}
 			}

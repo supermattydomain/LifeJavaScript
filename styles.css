@@ -32,7 +32,12 @@ table.LifeBoard {
 	width: 100%;
 	height: 60%;
 	padding: 0px;
+	/*
+	cell-padding: 0px;
+	cell-spacing: 0px;
+	*/
 	border-width: 0px;
+	border-collapse: collapse;
 	/*
 	border-spacing: 0px;
 	border-collapse: separate;
@@ -55,9 +60,9 @@ td.Dead:hover {
 	background-color: #ff0000;
 }
 /* Work around seemingly broken hover pseudoclass in IE */
-td.AliveHover {
+td.Alive-hover {
 	background-color: #ffff00;
 }
-td.DeadHover {
+td.Dead-hover {
 	background-color: #ff0000;
 }
