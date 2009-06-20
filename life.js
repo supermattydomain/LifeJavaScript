@@ -153,7 +153,7 @@ LifeBoard.prototype = {
 			this.current = this.next;
 			this.next = temp;
 		} else {
-			this.debugLog('Stable');
+			showLog('Stable');
 		}
 		return changed;
 	},
@@ -165,6 +165,14 @@ LifeBoard.prototype = {
 		for (var y = 0; y < this.current.height; y++) {
 			for (var x = 0; x < this.current.width; x++) {
 				this.current.getCell(x, y).setLife(false);
+			}
+		}
+	},
+	randomise: function() {
+		for (var y = 0; y < this.current.height; y++) {
+			for (var x = 0; x < this.current.width; x++) {
+				var random = Math.random();
+				this.current.getCell(x, y).setLife(random < 0.5);
 			}
 		}
 	},

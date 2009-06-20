@@ -22,7 +22,6 @@ var interval;
 
 function timerFunc() {
 	if (!board.nextGeneration()) {
-		showLog("stable");
 		stopRunning();
 	}
 }
@@ -54,12 +53,17 @@ function clearBoard() {
 	board.clear();
 }
 
+function randomiseBoard() {
+	board.randomise();
+}
+
 // --></script>
 
 <form method="get" action="">
 <input type="button" value="Single step" onClick="board.nextGeneration();">
 <input id="toggleButton" type="button" value="Resume" onClick="toggleRunning(delay);">
 <input type="button" value="Clear" onClick="clearBoard();">
+<input type="button" value="Random" onClick="randomiseBoard();">
 <input type="checkbox" id="wrapCheckBox" checked onChange="toggleWrap();">Edges wrap
 </form>
 
