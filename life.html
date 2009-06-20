@@ -57,15 +57,13 @@ function clearBoard() {
 <input type="button" value="Single step" onClick="board.nextGeneration();">
 <input id="toggleButton" type="button" value="Resume" onClick="toggleRunning(delay);">
 <input type="button" value="Clear" onClick="clearBoard();">
-<input type="checkbox" onClick="toggleWrap();">Edges wrap
+<input type="checkbox" id="wrapCheckBox" checked onChange="toggleWrap();">Edges wrap
 </form>
 
-<div id="boardDiv"></div>
+<div id="boardDiv"><table></table></div>
 
-<script language="javascript"><!--
-var table = dce('table');
-$('boardDiv').appendChild(table);
-board = new LifeBoard(table, width, height, false);
+	<script language="javascript"><!--
+board = new LifeBoard($('boardDiv').firstChild, width, height, $("wrapCheckBox").checked);
 board.glider(0, 0);
 // --></script>
 

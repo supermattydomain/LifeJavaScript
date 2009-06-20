@@ -1,19 +1,21 @@
 function LifeCell(element, pLife) {
-	// this.debugLog("LifeCell init");
+	// this.setDebug(true);
+	this.debugLog("LifeCell init");
 	this.element = element;
 	this.setLife(pLife);
-	// showLog("LifeCell end init");
+	this.debugLog("LifeCell end init");
 }
 
 LifeCell.prototype = {
+	getLife: function() {
+		return this.life;
+	},
 	setLife: function(pLife) {
 		this.life = pLife;
-		// this.redraw();
+		setClass(this.element, this.life ? 'Alive' : 'Dead');
 	},
-	redraw: function() {
-		if (this.element) {
-			setClass(this.element, this.life ? 'Alive' : 'Dead');
-		}
+	toggleLife: function() {
+		this.setLife(!this.getLife());
 	},
 	setNeighbours: function(currentLife, pNeighbours) {
 		var newLife;
@@ -31,51 +33,39 @@ LifeCell.prototype = {
 			newLife = false;
 		}
 		this.setLife(newLife);
-	},
-	getLife: function() {
-		return this.life;
-	},
-	toggleLife: function() {
-		this.setLife(!this.getLife());
-	},
-	onclick: function() {
-		this.toggleLife();
 	}
 };
 
 function LifeGrid(pTable, pHeight, pWidth) {
-	this.setDebug(true);
+	// this.setDebug(true);
 	this.debugLog("LifeGrid init");
 	this.table = pTable;
 	this.width = pWidth;
 	this.height = pHeight;
-	this.addCells();
+	this.createLifeCells();
 	this.debugLog("LifeGrid end init");
 }
 
 LifeGrid.prototype = {
-	addCells: function() {
+	getCell: function(row, col) {
+		if (bad(row) || bad(col) || row < 0 || row >= this.height || col < 0 || col >= this.width) {
+			fatal('Bad coords row=' + row + ' col=' + col);
+		}
+		return this.cells[row][col];
+	},
+	createLifeCells: function() {
 		this.cells = new Array();
 		for (var row = 0; row < this.height; row++) {
 			this.cells[row] = new Array();
 			for (var col = 0; col < this.width; col++) {
-				var tableCell = this.table ? this.table.rows[row].cells[col] : null;
+				var tableCell = this.table.rows[row].cells[col];
 				this.cells[row][col] = new LifeCell(tableCell, false);
 			}
-			// this.table.tBodies[0].appendChild(r);
 		}
-	},
-	getCell: function(row, col) {
-		if (row < 0 || row >= this.height || col < 0 || col >= this.width) {
-			fatal('Bad coords row=' + row + ' col=' + col);
-			return undefined;
-		}
-		return this.cells[row][col];
 	},
 	countNeighbours: function(row, col, wrap) {
 		if (row < 0 || row >= this.height || col < 0 || col >= this.width) {
 			fatal('Bad coords row=' + row + ' col=' + col);
-			return 0;
 		}
 		var n = 0;
 		var colmin = col - 1, rowmin = row - 1;
@@ -112,23 +102,15 @@ LifeGrid.prototype = {
 			}
 		}
 		return n;
-	},
-	redraw: function() {
-		if (this.table) {
-			for (var row = 0; row < this.height; row++) {
-				for (var col = 0; col < this.width; col++) {
-					this.cells[row][col].redraw();
-				}
-			}
-		}
 	}
 };
 
 function LifeBoard(pTable, pHeight, pWidth, wrap) {
+	// this.setDebug(true);
 	this.debugLog("LifeBoard init");
 	this.table = pTable;
 	setClass(this.table, 'LifeBoard');
-	this.addCells(pHeight, pWidth);
+	this.createTable(pHeight, pWidth);
 	this.wrap = !!wrap;
 	this.current = new LifeGrid(this.table, pHeight, pWidth);
 	this.next = new LifeGrid(this.table, pHeight, pWidth);
@@ -136,23 +118,21 @@ function LifeBoard(pTable, pHeight, pWidth, wrap) {
 }
 
 LifeBoard.prototype = {
-	addCells: function(height, width) {
+	createTable: function(height, width) {
 		for (var row = 0; row < height; row++) {
 			var tableRow = this.table.insertRow(this.table.rows.length);
 			setClass(tableRow, 'LifeRow');
 			for (var col = 0; col < width; col++) {
 				var cell = tableRow.insertCell(0);
-				// Must contain something in order to be drawn properly
-				cell.appendChild(dctn(' '));
+				var board = this;
+				cell.onclick = function() {
+					board.debugLog("cell: onClick, row=" + this.parentNode.rowIndex + ", col=" + this.cellIndex);
+					board.handleClick(this.parentNode.rowIndex, this.cellIndex);
+				}
 			}
-			// this.table.tBodies[0].appendChild(r);
 		}
 	},
-	redraw: function() {
-		this.current.redraw();
-	},
 	nextGeneration: function() {
-		clearLog();
 		var changed = false;
 		var row, col;
 		for (row = 0; row < this.current.height; row++) {
@@ -167,16 +147,15 @@ LifeBoard.prototype = {
 				// this.debugLog('row=' + row + ' col=' + col + ' oldN=' + n + ' newLife=' + nextCell.getLife());
 			}
 		}
-		var temp = this.current;
-		this.current = this.next;
-		this.next = temp;
-		// this.refill();
 		if (changed) {
-			this.redraw();
+			// swap current and next generation grids
+			var temp = this.current;
+			this.current = this.next;
+			this.next = temp;
 		} else {
 			this.debugLog('Stable');
 		}
-		return !!changed;
+		return changed;
 	},
 	toggleWrap: function() {
 		this.wrap = !this.wrap;
@@ -204,5 +183,9 @@ LifeBoard.prototype = {
 		this.current.getCell(x + 0, y + 2).setLife(true);
 		this.current.getCell(x + 1, y + 2).setLife(true);
 		this.current.getCell(x + 2, y + 2).setLife(true);
+	},
+	handleClick: function(row, col) {
+		this.debugLog("LifeBoard.handleClick(" + row + ", " + col + ")");
+		this.current.getCell(row, col).toggleLife();
 	}
 };

@@ -12,8 +12,14 @@ tr.LifeRow {
 td.Alive {
 	background-color: #00ff00;
 }
+td.Alive:hover {
+	background-color: #ffff00;
+}
 td.Dead {
 	background-color: #000000;
+}
+td.Dead:hover {
+	background-color: #ff0000;
 }
 #logDiv {
 	width: 50%;
