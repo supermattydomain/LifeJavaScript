@@ -21,24 +21,27 @@ var board;
 var interval;
 
 function timerFunc() {
-	board.nextGeneration();
+	if (!board.nextGeneration()) {
+		showLog("stable");
+		stopRunning();
+	}
 }
 
 function startRunning(delay) {
 	interval = setInterval("timerFunc()", delay);
+	$('toggleButton').value = 'Pause';
 }
 
 function stopRunning() {
 	clearInterval(interval);
 	interval = undefined;
+	$('toggleButton').value = 'Resume';
 }
 
 function toggleRunning(delay) {
 	if (interval) {
-		$('toggleButton').value = 'Resume';
 		stopRunning();
 	} else {
-		$('toggleButton').value = 'Pause';
 		startRunning(delay);
 	}
 }
