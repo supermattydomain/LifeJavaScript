@@ -1,16 +1,21 @@
 <html>
 <head>
-<title>Game of Life</title>
+<title>Conway's Game of Life</title>
 <script language="javascript" src="js-lib/prototype.js"></script>
 <script language="javascript" src="js-lib/log.js"></script>
 <script language="javascript" src="life.js"></script>
 <link rel="stylesheet" type="text/css" href="styles.css"></link>
 </head>
-<body bgcolor="#ffffff">
+<body>
 
-<h1>Game of Life</h1>
+<div id="topDiv">
 
-<div id="logDiv"></div>
+<h1>Conway's Game of Life</h1>
+
+<div id="logDiv">
+</div>
+
+<div id="formDiv">
 
 <script language="javascript"><!--
 var width = 20;
@@ -55,12 +60,18 @@ function toggleRunning(delay) {
 <input type="checkbox" id="wrapCheckBox" checked onChange="board.toggleWrap();">Edges wrap
 </form>
 
-<div id="boardDiv"><table></table></div>
+</div>
+</div>
 
-	<script language="javascript"><!--
-board = new LifeBoard($('boardDiv').firstChild, width, height, $("wrapCheckBox").checked);
+<div id="boardDiv">
+
+<table id="boardTable"></table>
+
+<script language="javascript"><!--
+board = new LifeBoard($('boardTable'), width, height, $("wrapCheckBox").checked);
 board.glider(0, 0);
 // --></script>
 
+</div>
 </body>
 </html>
