@@ -128,6 +128,17 @@ LifeBoard.prototype = {
 				cell.onclick = function() {
 					board.debugLog("cell: onClick, row=" + this.parentNode.rowIndex + ", col=" + this.cellIndex);
 					board.handleClick(this.parentNode.rowIndex, this.cellIndex);
+				};
+				// Work around seemingly broken hover pseudoclass in IE
+				if (Prototype.Browser.IE) {
+					cell.onmouseover = function() {
+						this.className = this.className + "Hover";
+						showLog(this.className);
+					};
+					cell.onmouseout = function() {
+						this.className = this.className.replace("Hover", "");
+						showLog(this.className);
+					};
 				}
 			}
 		}
@@ -141,9 +152,7 @@ LifeBoard.prototype = {
 				var currentCell = this.current.getCell(row, col);
 				var nextCell = this.next.getCell(row, col);
 				nextCell.setNeighbours(currentCell.getLife(), n);
-				if (!changed && currentCell.getLife() != nextCell.getLife()) {
-					changed = true;
-				}
+				changed |= (currentCell.getLife() != nextCell.getLife());
 				// this.debugLog('row=' + row + ' col=' + col + ' oldN=' + n + ' newLife=' + nextCell.getLife());
 			}
 		}
@@ -155,11 +164,19 @@ LifeBoard.prototype = {
 		} else {
 			showLog('Stable');
 		}
-		return changed;
+		return !!changed;
+	},
+	getWrap: function() {
+		return this.wrap;
+	},
+	setWrap: function(newWrap) {
+		if (newWrap != this.wrap) {
+			this.wrap = newWrap;
+			this.debugLog("setWrap: " + this.wrap);
+		}
 	},
 	toggleWrap: function() {
-		this.wrap = !this.wrap;
-		this.debugLog('New wrap: ' + this.wrap);
+		this.setWrap(!this.getWrap());
 	},
 	clear: function() {
 		for (var row = 0; row < this.current.height; row++) {
