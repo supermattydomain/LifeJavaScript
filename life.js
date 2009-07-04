@@ -187,7 +187,7 @@ LifeBoard.prototype = {
 		for (var row = 0; row < this.current.height; row++) {
 			for (var col = 0; col < this.current.width; col++) {
 				var random = Math.random();
-				this.current.getCell(row, col).setLife(random < 0.5);
+				this.current.getCell(row, col).setLife(random * 3 >= 2);
 			}
 		}
 	},

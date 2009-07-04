@@ -1,9 +1,10 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>Conway's Game of Life</title>
-<script language="javascript" src="js-lib/prototype.js"></script>
-<script language="javascript" src="js-lib/log.js"></script>
-<script language="javascript" src="life.js"></script>
+<script language="javascript" type="text/javascript" src="js-lib/prototype.js"></script>
+<script language="javascript" type="text/javascript" src="js-lib/log.js"></script>
+<script language="javascript" type="text/javascript" src="life.js"></script>
 <link rel="stylesheet" type="text/css" href="styles.css"></link>
 </head>
 <body>
@@ -17,9 +18,10 @@
 
 <div id="formDiv">
 
-<script language="javascript"><!--
-var width = 20;
-var height = 20;
+<script language="javascript" type="text/javascript"><!--
+// 23 is prime
+var width = 23;
+var height = 23;
 var delay = 1;
 var board;
 
@@ -67,7 +69,7 @@ function toggleRunning(delay) {
 
 <table id="boardTable"></table>
 
-<script language="javascript"><!--
+<script language="javascript" type="text/javascript"><!--
 board = new LifeBoard($('boardTable'), width, height, $("wrapCheckBox").checked);
 board.glider(0, 0);
 // --></script>
