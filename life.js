@@ -1,9 +1,17 @@
+function bad(v) {
+	if (undefined === v || null == v) {
+		return true;
+	}
+	return false;
+}
+
+function good(v) {
+	return !bad(v);
+}
+
 function LifeCell(element, pLife) {
-	// this.setDebug(true);
-	this.debugLog("LifeCell init");
 	this.element = element;
 	this.setLife(pLife);
-	this.debugLog("LifeCell end init");
 }
 
 LifeCell.prototype = {
@@ -12,7 +20,7 @@ LifeCell.prototype = {
 	},
 	setLife: function(pLife) {
 		this.life = pLife;
-		setClass(this.element, this.life ? 'Alive' : 'Dead');
+		this.element.className = this.life ? 'Alive' : 'Dead';
 	},
 	toggleLife: function() {
 		this.setLife(!this.getLife());
@@ -37,13 +45,10 @@ LifeCell.prototype = {
 };
 
 function LifeGrid(pTable, pHeight, pWidth) {
-	// this.setDebug(true);
-	this.debugLog("LifeGrid init");
 	this.table = pTable;
 	this.width = pWidth;
 	this.height = pHeight;
 	this.createLifeCells();
-	this.debugLog("LifeGrid end init");
 }
 
 LifeGrid.prototype = {
@@ -58,7 +63,7 @@ LifeGrid.prototype = {
 		for (var row = 0; row < this.height; row++) {
 			this.cells[row] = new Array();
 			for (var col = 0; col < this.width; col++) {
-				var tableCell = this.table.rows[row].cells[col];
+				var tableCell = this.table[0].rows[row].cells[col];
 				this.cells[row][col] = new LifeCell(tableCell, false);
 			}
 		}
@@ -106,38 +111,26 @@ LifeGrid.prototype = {
 };
 
 function LifeBoard(pTable, pHeight, pWidth, wrap) {
-	// this.setDebug(true);
-	this.debugLog("LifeBoard init");
 	this.table = pTable;
-	setClass(this.table, 'LifeBoard');
+	this.table[0].className = 'LifeBoard';
 	this.createTable(pHeight, pWidth);
 	this.wrap = !!wrap;
 	this.current = new LifeGrid(this.table, pHeight, pWidth);
 	this.next = new LifeGrid(this.table, pHeight, pWidth);
-	this.debugLog("LifeBoard end init");
 }
 
 LifeBoard.prototype = {
 	createTable: function(height, width) {
 		for (var row = 0; row < height; row++) {
-			var tableRow = this.table.insertRow(this.table.rows.length);
-			setClass(tableRow, 'LifeRow');
+			var tableRow = this.table[0].insertRow(this.table[0].rows.length);
+			tableRow.className = 'LifeRow';
 			for (var col = 0; col < width; col++) {
 				var cell = tableRow.insertCell(0);
 				var board = this;
 				cell.onclick = function() {
-					board.debugLog("cell: onClick, row=" + this.parentNode.rowIndex + ", col=" + this.cellIndex);
+					debug("cell: onClick, row=" + this.parentNode.rowIndex + ", col=" + this.cellIndex);
 					board.handleClick(this.parentNode.rowIndex, this.cellIndex);
 				};
-				// Work around seemingly broken hover pseudoclass in IE
-				if (Prototype.Browser.IE) {
-					cell.onmouseover = function() {
-						this.className += "-hover";
-					};
-					cell.onmouseout = function() {
-						this.className = this.className.replace("-hover", "");
-					};
-				}
 			}
 		}
 	},
@@ -151,7 +144,7 @@ LifeBoard.prototype = {
 				var nextCell = this.next.getCell(row, col);
 				nextCell.setNeighbours(currentCell.getLife(), n);
 				changed |= (currentCell.getLife() != nextCell.getLife());
-				// this.debugLog('row=' + row + ' col=' + col + ' oldN=' + n + ' newLife=' + nextCell.getLife());
+				// debug('row=' + row + ' col=' + col + ' oldN=' + n + ' newLife=' + nextCell.getLife());
 			}
 		}
 		if (changed) {
@@ -160,7 +153,7 @@ LifeBoard.prototype = {
 			this.current = this.next;
 			this.next = temp;
 		} else {
-			showLog('Stable');
+			debug('Stable');
 		}
 		return !!changed;
 	},
@@ -170,7 +163,7 @@ LifeBoard.prototype = {
 	setWrap: function(newWrap) {
 		if (newWrap != this.wrap) {
 			this.wrap = newWrap;
-			this.debugLog("setWrap: " + this.wrap);
+			debug("setWrap: " + this.wrap);
 		}
 	},
 	toggleWrap: function() {
@@ -208,7 +201,7 @@ LifeBoard.prototype = {
 		this.current.getCell(row + 2, col + 2).setLife(true);
 	},
 	handleClick: function(row, col) {
-		this.debugLog("LifeBoard.handleClick(" + row + ", " + col + ")");
+		debug("LifeBoard.handleClick(" + row + ", " + col + ")");
 		this.current.getCell(row, col).toggleLife();
 	}
 };

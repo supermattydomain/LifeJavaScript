@@ -2,8 +2,8 @@
 <html>
 <head>
 <title>Conway's Game of Life</title>
-<script language="javascript" type="text/javascript" src="js-lib/prototype.js"></script>
-<script language="javascript" type="text/javascript" src="js-lib/log.js"></script>
+<script language="javascript" type="text/javascript" src="../lib/jquery/dist/jquery.js"></script>
+<script language="javascript" type="text/javascript" src="../lib/jsdebug/debug.js"></script>
 <script language="javascript" type="text/javascript" src="life.js"></script>
 <link rel="stylesheet" type="text/css" href="styles.css"></link>
 </head>
@@ -35,13 +35,13 @@ function timerFunc() {
 
 function startRunning(delay) {
 	interval = setInterval("timerFunc()", delay);
-	$('toggleButton').value = 'Pause';
+	$('#toggleButton').value = 'Pause';
 }
 
 function stopRunning() {
 	clearInterval(interval);
 	interval = undefined;
-	$('toggleButton').value = 'Resume';
+	$('#toggleButton').value = 'Resume';
 }
 
 function toggleRunning(delay) {
@@ -59,7 +59,7 @@ function toggleRunning(delay) {
 <input id="toggleButton" type="button" value="Resume" onClick="toggleRunning(delay);">
 <input type="button" value="Clear" onClick="board.clear();">
 <input type="button" value="Random" onClick="board.randomise();">
-<input type="checkbox" id="wrapCheckBox" checked onChange="board.toggleWrap();">Edges wrap
+<input type="checkbox" id="wrapCheckBox" checked>Edges wrap
 </form>
 
 </div>
@@ -70,7 +70,11 @@ function toggleRunning(delay) {
 <table id="boardTable"></table>
 
 <script language="javascript" type="text/javascript"><!--
-board = new LifeBoard($('boardTable'), width, height, $("wrapCheckBox").checked);
+var wrapCheckBox = $('#wrapCheckBox');
+board = new LifeBoard($('#boardTable'), width, height, wrapCheckBox.val());
+wrapCheckBox.click(function() {
+	board.toggleWrap();
+});
 board.glider(0, 0);
 // --></script>
 
