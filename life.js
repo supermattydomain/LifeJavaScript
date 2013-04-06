@@ -174,24 +174,45 @@ $.extend(Life.Board.prototype, {
 		}
 		return this;
 	},
-	glider: function(row, col) {
-		//  O 
-		//   O
-		// OOO
-		this.current.getCell(row + 0, col + 0).setLife(false);
-		this.current.getCell(row + 1, col + 0).setLife(true);
-		this.current.getCell(row + 2, col + 0).setLife(false);
-
-		this.current.getCell(row + 0, col + 1).setLife(false);
-		this.current.getCell(row + 1, col + 1).setLife(false);
-		this.current.getCell(row + 2, col + 1).setLife(true);
-
-		this.current.getCell(row + 0, col + 2).setLife(true);
-		this.current.getCell(row + 1, col + 2).setLife(true);
-		this.current.getCell(row + 2, col + 2).setLife(true);
-		return this;
+	cannedShape: function(row, col, shapeName) {
+		var shape = Life.cannedShapes[shapeName], r, c;
+		for (r = 0; r < shape.length; r++) {
+			for (c = 0; c < shape[r].length; c++) {
+				this.current.getCell(row + r, col + c).setLife(shape[r].charAt(c) !== ' ');
+			}
+		}
 	},
 	handleClick: function(row, col) {
 		this.current.getCell(row, col).toggleLife();
+	}
+});
+
+$.extend(Life, {
+	cannedShapes: {
+		glider: [
+			' O ',
+			'  O',
+			'OOO'
+		],
+		'light-weight spaceship': [
+			' O  O',
+			'O    ',
+			'O   O',
+			'OOOO '
+		],
+		'middle-weight spaceship': [
+			'   O  ',
+			' O   O',
+			'O     ',
+			'O    O',
+			'OOOOO '
+		],
+		'heavy-weight spaceship': [
+			'   OO  ',
+			' O    O',
+			'O      ',
+			'O     O',
+			'OOOOOO '
+		]
 	}
 });
