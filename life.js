@@ -177,8 +177,11 @@ $.extend(Life.Board.prototype, {
 	cannedShape: function(row, col, shapeName) {
 		var shape = Life.cannedShapes[shapeName], r, c;
 		for (r = 0; r < shape.length; r++) {
+			if (shape[r].charAt(0) === '!') {
+				continue;
+			}
 			for (c = 0; c < shape[r].length; c++) {
-				this.current.getCell(row + r, col + c).setLife(shape[r].charAt(c) !== ' ');
+				this.current.getCell(row + r, col + c).setLife(shape[r].charAt(c) !== ' ' && shape[r].charAt(c) !== '.');
 			}
 		}
 	},
@@ -190,29 +193,55 @@ $.extend(Life.Board.prototype, {
 $.extend(Life, {
 	cannedShapes: {
 		glider: [
-			' O ',
-			'  O',
+			'!Name: Glider',
+			'!Richard Guy, 1970',
+			'!,',
+			'.O.',
+			'..O',
 			'OOO'
 		],
 		'light-weight spaceship': [
-			' O  O',
-			'O    ',
-			'O   O',
-			'OOOO '
+			'Name: Light-weight spaceship',
+			'!John Conway, 1970',
+			'!',
+			'.O..O',
+			'O....',
+			'O...O',
+			'OOOO.'
 		],
 		'middle-weight spaceship': [
-			'   O  ',
-			' O   O',
-			'O     ',
-			'O    O',
-			'OOOOO '
+			'!Name: Middle-weight spaceship',
+			'!John Conway, 1970',
+			'!',
+			'...O..',
+			'.O...O',
+			'O.....',
+			'O....O',
+			'OOOOO.'
 		],
 		'heavy-weight spaceship': [
-			'   OO  ',
-			' O    O',
-			'O      ',
-			'O     O',
-			'OOOOOO '
+			'!Name: Heavy-weight spaceship',
+			'!John Conway, 1970',
+			'!',
+			'...OO..',
+			'.O....O',
+			'O......',
+			'O.....O',
+			'OOOOOO.'
+		],
+		'glider gun': [
+			'!Name: Gosper glider gun',
+			'!Bill Gosper, November 1970',
+			'!',
+			'........................O...........',
+			'......................O.O...........',
+			'............OO......OO............OO',
+			'...........O...O....OO............OO',
+			'OO........O.....O...OO..............',
+			'OO........O...O.OO....O.O...........',
+			'..........O.....O.......O...........',
+			'...........O...O....................',
+			'............OO......................'
 		]
 	}
 });

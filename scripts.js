@@ -1,8 +1,8 @@
 (function($) {
 	$(function() {
-		// 23 is prime
-		var width = 23,
-			height = 23,
+		// 53 is prime
+		var width = 53,
+			height = 53,
 			delay = 100,
 			interval = undefined,
 			buttonSingleStep = $('#buttonSingleStep'),
@@ -55,6 +55,6 @@
 			board.handleClick(this.parentNode.rowIndex, this.cellIndex);
 		});
 		// board.glider(0, 0);
-		board.cannedShape(0, 0, 'glider');
+		board.cannedShape(0, 0, 'glider gun');
 	});
 })(jQuery);
