@@ -102,15 +102,20 @@ $.extend(Life.Grid.prototype, {
 	}
 });
 
-Life.Board = function(pTable, pHeight, pWidth, wrap) {
-	this.table = pTable;
-	this.createTable(pHeight, pWidth);
-	this.wrap = !!wrap;
-	this.current = new Life.Grid(this.table, pHeight, pWidth);
-	this.next = new Life.Grid(this.table, pHeight, pWidth);
+Life.Board = function(table) {
+	this.table = table;
+	this.createTable(this.height, this.width);
+	this.current = new Life.Grid(this.table, this.height, this.width);
+	this.next = new Life.Grid(this.table, this.height, this.width);
 };
 
 $.extend(Life.Board.prototype, {
+	delay: 100,
+	// 53 is prime
+	width: 53,
+	height: 53,
+	wrap: true,
+	interval: undefined,
 	createTable: function(height, width) {
 		var row, col, tableRow;
 		for (row = 0; row < height; row++) {
@@ -152,7 +157,7 @@ $.extend(Life.Board.prototype, {
 		return this;
 	},
 	toggleWrap: function() {
-		this.setWrap(!this.getWrap());
+		this.wrap = !this.wrap;
 		return this;
 	},
 	clear: function() {
@@ -187,10 +192,47 @@ $.extend(Life.Board.prototype, {
 	},
 	handleClick: function(row, col) {
 		this.current.getCell(row, col).toggleLife();
+	},
+	tick: function() {
+		if (!this.nextGeneration()) {
+			this.stop();
+		}
+	},
+	isRunning: function() {
+		return !!this.interval;
+	},
+	start: function() {
+		var that = this;
+		this.stop();
+		this.interval = setInterval(function() {
+			that.tick();
+		}, this.delay);
+		this.table.trigger(Life.eventNames.started);
+		return this;
+	},
+	stop: function() {
+		if (this.interval) {
+			clearInterval(this.interval);
+			this.interval = undefined;
+			this.table.trigger(Life.eventNames.stopped);
+		}
+		return this;
+	},
+	toggleRunning: function(delay) {
+		if (this.isRunning()) {
+			this.stop();
+		} else {
+			this.start();
+		}
+		return this;
 	}
 });
 
 $.extend(Life, {
+	eventNames: {
+		started: 'Life.started',
+		stopped: 'Life.stopped'
+	},
 	cannedShapes: {
 		glider: [
 			'!Name: Glider',

@@ -1,49 +1,25 @@
 (function($) {
 	$(function() {
-		// 53 is prime
-		var width = 53,
-			height = 53,
-			delay = 100,
-			interval = undefined,
-			buttonSingleStep = $('#buttonSingleStep'),
+		var buttonSingleStep = $('#buttonSingleStep'),
 			buttonStart = $('#buttonStart'),
 			buttonClear = $('#buttonClear'),
 			buttonRandomise = $('#buttonRandomise'),
 			checkboxWrap = $('#checkboxWrap'),
 			boardTable = $('table.LifeBoard'),
-			board = new Life.Board(boardTable, width, height, checkboxWrap.val());
-		function timerFunc() {
-			if (!board.nextGeneration()) {
-				stopRunning();
-			}
-		}
-
-		function startRunning(delay) {
-			interval = setInterval(timerFunc, delay);
-			buttonStart.val('Pause');
-		}
-
-		function stopRunning() {
-			clearInterval(interval);
-			interval = undefined;
-			buttonStart.val('Resume');
-		}
-
-		function toggleRunning(delay) {
-			if (interval) {
-				stopRunning();
-			} else {
-				startRunning(delay);
-			}
-		}
+			board = new Life.Board(boardTable);
 		checkboxWrap.on('click', function() {
 			board.toggleWrap();
 		});
 		buttonSingleStep.on('click', function() {
-			board.nextGeneration();
+			board.tick();
 		});
 		buttonStart.on('click', function() {
-			toggleRunning(delay);
+			board.toggleRunning();
+		});
+		boardTable.on(Life.eventNames.started, function() {
+			buttonStart.val('Pause');
+		}).on(Life.eventNames.stopped, function() {
+			buttonStart.val('Resume');
 		});
 		buttonClear.on('click', function() {
 			board.clear();
@@ -54,7 +30,6 @@
 		boardTable.find('td').on('click', function() {
 			board.handleClick(this.parentNode.rowIndex, this.cellIndex);
 		});
-		// board.glider(0, 0);
 		board.cannedShape(0, 0, 'glider gun');
 	});
 })(jQuery);
