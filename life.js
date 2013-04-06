@@ -11,14 +11,17 @@ $.extend(Life.Cell.prototype, {
 	getLife: function() {
 		return this.life;
 	},
-	setLife: function(pLife) {
-		this.life = pLife;
-		this.element.className = this.life ? 'Alive' : 'Dead';
+	setLife: function(newLife) {
+		this.life = newLife;
+		if (this.life) {
+			this.element.removeClass('Dead').addClass('Alive');
+		} else {
+			this.element.removeClass('Alive').addClass('Dead');
+		}
 		return this;
 	},
 	toggleLife: function() {
-		this.setLife(!this.getLife());
-		return this;
+		return this.setLife(!this.getLife());
 	},
 	setNeighbours: function(currentLife, pNeighbours) {
 		var newLife;
@@ -35,37 +38,34 @@ $.extend(Life.Cell.prototype, {
 			// death by overcrowding
 			newLife = false;
 		}
-		this.setLife(newLife);
-		return this;
+		return this.setLife(newLife);
 	}
 });
 
-Life.Grid = function(pTable, pHeight, pWidth) {
-	this.table = pTable;
-	this.width = pWidth;
-	this.height = pHeight;
-	this.createLifeCells();
+Life.Grid = function(table, height, width) {
+	this.table = table;
+	this.width = width;
+	this.height = height;
+	this.createCells();
 };
 
 $.extend(Life.Grid.prototype, {
 	getCell: function(row, col) {
 		return this.cells[row][col];
 	},
-	createLifeCells: function() {
+	createCells: function() {
+		var row, col;
 		this.cells = [];
-		for (var row = 0; row < this.height; row++) {
+		for (row = 0; row < this.height; row++) {
 			this.cells[row] = [];
-			for (var col = 0; col < this.width; col++) {
-				var tableCell = this.table[0].rows[row].cells[col];
-				this.cells[row][col] = new Life.Cell(tableCell, false);
+			for (col = 0; col < this.width; col++) {
+				this.cells[row][col] = new Life.Cell($(this.table[0].rows[row].cells[col]), false);
 			}
 		}
 		return this;
 	},
 	countNeighbours: function(row, col, wrap) {
-		var n = 0;
-		var colmin = col - 1, rowmin = row - 1;
-		var colmax = col + 1, rowmax = row + 1;
+		var n = 0, colmin = col - 1, rowmin = row - 1, colmax = col + 1, rowmax = row + 1, scanrow, scancol, wraprow, wrapcol;
 		if (!wrap) {
 			// If not wrapping, clip to board edges
 			if (colmin < 0) { colmin = 0; }
@@ -73,12 +73,13 @@ $.extend(Life.Grid.prototype, {
 			if (colmax >= this.width) { colmax = this.width - 1; }
 			if (rowmax >= this.height) { rowmax = this.height - 1; }
 		}
-		for (var scancol = colmin; scancol <= colmax; scancol++) {
-			for (var scanrow = rowmin; scanrow <= rowmax; scanrow++) {
+		for (scancol = colmin; scancol <= colmax; scancol++) {
+			for (scanrow = rowmin; scanrow <= rowmax; scanrow++) {
 				if (scanrow == row && scancol == col) {
 					continue; // don't count self
 				}
-				var wrapcol = scancol, wraprow = scanrow;
+				wrapcol = scancol;
+				wraprow = scanrow;
 				if (wrap) {
 					// if wrapping, wrap around edges
 					if (wraprow < 0) {
@@ -103,7 +104,6 @@ $.extend(Life.Grid.prototype, {
 
 Life.Board = function(pTable, pHeight, pWidth, wrap) {
 	this.table = pTable;
-	this.table[0].className = 'LifeBoard';
 	this.createTable(pHeight, pWidth);
 	this.wrap = !!wrap;
 	this.current = new Life.Grid(this.table, pHeight, pWidth);
@@ -112,36 +112,35 @@ Life.Board = function(pTable, pHeight, pWidth, wrap) {
 
 $.extend(Life.Board.prototype, {
 	createTable: function(height, width) {
-		for (var row = 0; row < height; row++) {
-			var tableRow = this.table[0].insertRow(this.table[0].rows.length);
-			for (var col = 0; col < width; col++) {
+		var row, col, tableRow;
+		for (row = 0; row < height; row++) {
+			tableRow = this.table[0].insertRow(this.table[0].rows.length);
+			for (col = 0; col < width; col++) {
 				tableRow.insertCell(0);
 			}
 		}
 		return this;
 	},
 	nextGeneration: function() {
-		var changed = false;
-		var row, col;
+		var row, col, changed = false, n, currentCell, nextCell, temp;
 		for (row = 0; row < this.current.height; row++) {
 			for (col = 0; col < this.current.width; col++) {
-				var n = this.current.countNeighbours(row, col, this.wrap);
-				var currentCell = this.current.getCell(row, col);
-				var nextCell = this.next.getCell(row, col);
+				n = this.current.countNeighbours(row, col, this.wrap);
+				currentCell = this.current.getCell(row, col);
+				nextCell = this.next.getCell(row, col);
 				nextCell.setNeighbours(currentCell.getLife(), n);
-				changed |= (currentCell.getLife() != nextCell.getLife());
-				// debug('row=' + row + ' col=' + col + ' oldN=' + n + ' newLife=' + nextCell.getLife());
+				changed = changed || (currentCell.getLife() != nextCell.getLife());
 			}
 		}
 		if (changed) {
 			// swap current and next generation grids
-			var temp = this.current;
+			temp = this.current;
 			this.current = this.next;
 			this.next = temp;
 		} else {
 			debug('Stable');
 		}
-		return !!changed;
+		return changed;
 	},
 	getWrap: function() {
 		return this.wrap;
@@ -157,16 +156,18 @@ $.extend(Life.Board.prototype, {
 		return this;
 	},
 	clear: function() {
-		for (var row = 0; row < this.current.height; row++) {
-			for (var col = 0; col < this.current.width; col++) {
+		var row, col;
+		for (row = 0; row < this.current.height; row++) {
+			for (col = 0; col < this.current.width; col++) {
 				this.current.getCell(row, col).setLife(false);
 			}
 		}
 		return this;
 	},
 	randomise: function() {
-		for (var row = 0; row < this.current.height; row++) {
-			for (var col = 0; col < this.current.width; col++) {
+		var row, col;
+		for (row = 0; row < this.current.height; row++) {
+			for (col = 0; col < this.current.width; col++) {
 				var random = Math.random();
 				this.current.getCell(row, col).setLife(random * 3 >= 2);
 			}

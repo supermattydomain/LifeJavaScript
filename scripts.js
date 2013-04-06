@@ -10,7 +10,8 @@
 			buttonClear = $('#buttonClear'),
 			buttonRandomise = $('#buttonRandomise'),
 			checkboxWrap = $('#checkboxWrap'),
-			board = new Life.Board($('#boardTable'), width, height, checkboxWrap.val());
+			boardTable = $('table.LifeBoard'),
+			board = new Life.Board(boardTable, width, height, checkboxWrap.val());
 		function timerFunc() {
 			if (!board.nextGeneration()) {
 				stopRunning();
@@ -50,7 +51,7 @@
 		buttonRandomise.on('click', function() {
 			board.randomise();
 		});
-		$('#boardTable td').on('click', function() {
+		boardTable.find('td').on('click', function() {
 			board.handleClick(this.parentNode.rowIndex, this.cellIndex);
 		});
 		board.glider(0, 0);

@@ -1,8 +1,6 @@
-#boardTable {
-	clear: both;
-}
 table.LifeBoard {
 	position: relative;
+	clear: both;
 	width: 300px;
 	height: 300px;
 	padding: 0px;
