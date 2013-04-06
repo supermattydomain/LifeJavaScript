@@ -8,13 +8,6 @@ body {
 	padding: 0px;
 	background-color: #ffffff;
 }
-#logDiv {
-	position: relative;
-	float: right;
-	overflow: auto;
-	width: 50%;
-	height: 50px;
-}
 #formDiv {
 	width: 50%;
 	float: left;

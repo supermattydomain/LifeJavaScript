@@ -1,14 +1,3 @@
-function bad(v) {
-	if (undefined === v || null == v) {
-		return true;
-	}
-	return false;
-}
-
-function good(v) {
-	return !bad(v);
-}
-
 function LifeCell(element, pLife) {
 	this.element = element;
 	this.setLife(pLife);
@@ -53,9 +42,6 @@ function LifeGrid(pTable, pHeight, pWidth) {
 
 LifeGrid.prototype = {
 	getCell: function(row, col) {
-		if (bad(row) || bad(col) || row < 0 || row >= this.height || col < 0 || col >= this.width) {
-			fatal('Bad coords row=' + row + ' col=' + col);
-		}
 		return this.cells[row][col];
 	},
 	createLifeCells: function() {
@@ -69,9 +55,6 @@ LifeGrid.prototype = {
 		}
 	},
 	countNeighbours: function(row, col, wrap) {
-		if (row < 0 || row >= this.height || col < 0 || col >= this.width) {
-			fatal('Bad coords row=' + row + ' col=' + col);
-		}
 		var n = 0;
 		var colmin = col - 1, rowmin = row - 1;
 		var colmax = col + 1, rowmax = row + 1;
