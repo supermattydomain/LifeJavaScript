@@ -5,76 +5,22 @@
 <script type="text/javascript" src="../lib/jquery/dist/jquery.js"></script>
 <script type="text/javascript" src="../lib/jsdebug/debug.js"></script>
 <script type="text/javascript" src="life.js"></script>
+<script type="text/javascript" src="scripts.js"></script>
 <link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
 <body>
 
-<div id="topDiv">
-
 <h1>Conway's Game of Life</h1>
 
-<div id="formDiv">
-
-<script type="text/javascript"><!--
-// 23 is prime
-var width = 23;
-var height = 23;
-var delay = 1;
-var board;
-
-var interval;
-
-function timerFunc() {
-	if (!board.nextGeneration()) {
-		stopRunning();
-	}
-}
-
-function startRunning(delay) {
-	interval = setInterval(timerFunc, delay);
-	$('#toggleButton').value = 'Pause';
-}
-
-function stopRunning() {
-	clearInterval(interval);
-	interval = undefined;
-	$('#toggleButton').value = 'Resume';
-}
-
-function toggleRunning(delay) {
-	if (interval) {
-		stopRunning();
-	} else {
-		startRunning(delay);
-	}
-}
-
-// --></script>
-
 <form method="get" action="#">
-<input type="button" value="Single step" onClick="board.nextGeneration();">
-<input id="toggleButton" type="button" value="Resume" onClick="toggleRunning(delay);">
-<input type="button" value="Clear" onClick="board.clear();">
-<input type="button" value="Random" onClick="board.randomise();">
-<input type="checkbox" id="wrapCheckBox" checked>Edges wrap
+<input id="buttonSingleStep" type="button" value="Single step" />
+<input id="buttonStart" type="button" value="Resume" />
+<input id="buttonClear" type="button" value="Clear" />
+<input id="buttonRandomise" type="button" value="Random" />
+<input id="checkboxWrap"  type="checkbox" checked="checked" />Edges wrap
 </form>
-
-</div>
-</div>
-
-<div id="boardDiv">
 
 <table id="boardTable"></table>
 
-<script type="text/javascript"><!--
-var wrapCheckBox = $('#wrapCheckBox');
-board = new LifeBoard($('#boardTable'), width, height, wrapCheckBox.val());
-wrapCheckBox.click(function() {
-	board.toggleWrap();
-});
-board.glider(0, 0);
-// --></script>
-
-</div>
 </body>
 </html>

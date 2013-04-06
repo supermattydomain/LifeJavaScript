@@ -106,7 +106,6 @@ LifeBoard.prototype = {
 	createTable: function(height, width) {
 		for (var row = 0; row < height; row++) {
 			var tableRow = this.table[0].insertRow(this.table[0].rows.length);
-			tableRow.className = 'LifeRow';
 			for (var col = 0; col < width; col++) {
 				var cell = tableRow.insertCell(0);
 				var board = this;
@@ -148,9 +147,11 @@ LifeBoard.prototype = {
 			this.wrap = newWrap;
 			debug("setWrap: " + this.wrap);
 		}
+		return this;
 	},
 	toggleWrap: function() {
 		this.setWrap(!this.getWrap());
+		return this;
 	},
 	clear: function() {
 		for (var row = 0; row < this.current.height; row++) {
@@ -158,6 +159,7 @@ LifeBoard.prototype = {
 				this.current.getCell(row, col).setLife(false);
 			}
 		}
+		return this;
 	},
 	randomise: function() {
 		for (var row = 0; row < this.current.height; row++) {
@@ -166,6 +168,7 @@ LifeBoard.prototype = {
 				this.current.getCell(row, col).setLife(random * 3 >= 2);
 			}
 		}
+		return this;
 	},
 	glider: function(row, col) {
 		//  X 
@@ -182,9 +185,9 @@ LifeBoard.prototype = {
 		this.current.getCell(row + 0, col + 2).setLife(true);
 		this.current.getCell(row + 1, col + 2).setLife(true);
 		this.current.getCell(row + 2, col + 2).setLife(true);
+		return this;
 	},
 	handleClick: function(row, col) {
-		debug("LifeBoard.handleClick(" + row + ", " + col + ")");
 		this.current.getCell(row, col).toggleLife();
 	}
 };
