@@ -1,28 +1,34 @@
-function LifeCell(element, pLife) {
-	this.element = element;
-	this.setLife(pLife);
+if (typeof(life) === 'undefined') {
+	Life = {};
 }
 
-LifeCell.prototype = {
+Life.Cell = function(element, pLife) {
+	this.element = element;
+	this.setLife(pLife);
+};
+
+$.extend(Life.Cell.prototype, {
 	getLife: function() {
 		return this.life;
 	},
 	setLife: function(pLife) {
 		this.life = pLife;
 		this.element.className = this.life ? 'Alive' : 'Dead';
+		return this;
 	},
 	toggleLife: function() {
 		this.setLife(!this.getLife());
+		return this;
 	},
 	setNeighbours: function(currentLife, pNeighbours) {
 		var newLife;
 		if (pNeighbours < 2) {
 			// death by isolation
 			newLife = false;
-		} else if (2 == pNeighbours) {
+		} else if (2 === pNeighbours) {
 			// no change
 			newLife = currentLife;
-		} else if (3 == pNeighbours) {
+		} else if (3 === pNeighbours) {
 			// birth or survival
 			newLife = true;
 		} else {
@@ -30,29 +36,31 @@ LifeCell.prototype = {
 			newLife = false;
 		}
 		this.setLife(newLife);
+		return this;
 	}
-};
+});
 
-function LifeGrid(pTable, pHeight, pWidth) {
+Life.Grid = function(pTable, pHeight, pWidth) {
 	this.table = pTable;
 	this.width = pWidth;
 	this.height = pHeight;
 	this.createLifeCells();
-}
+};
 
-LifeGrid.prototype = {
+$.extend(Life.Grid.prototype, {
 	getCell: function(row, col) {
 		return this.cells[row][col];
 	},
 	createLifeCells: function() {
-		this.cells = new Array();
+		this.cells = [];
 		for (var row = 0; row < this.height; row++) {
-			this.cells[row] = new Array();
+			this.cells[row] = [];
 			for (var col = 0; col < this.width; col++) {
 				var tableCell = this.table[0].rows[row].cells[col];
-				this.cells[row][col] = new LifeCell(tableCell, false);
+				this.cells[row][col] = new Life.Cell(tableCell, false);
 			}
 		}
+		return this;
 	},
 	countNeighbours: function(row, col, wrap) {
 		var n = 0;
@@ -91,30 +99,26 @@ LifeGrid.prototype = {
 		}
 		return n;
 	}
-};
+});
 
-function LifeBoard(pTable, pHeight, pWidth, wrap) {
+Life.Board = function(pTable, pHeight, pWidth, wrap) {
 	this.table = pTable;
 	this.table[0].className = 'LifeBoard';
 	this.createTable(pHeight, pWidth);
 	this.wrap = !!wrap;
-	this.current = new LifeGrid(this.table, pHeight, pWidth);
-	this.next = new LifeGrid(this.table, pHeight, pWidth);
-}
+	this.current = new Life.Grid(this.table, pHeight, pWidth);
+	this.next = new Life.Grid(this.table, pHeight, pWidth);
+};
 
-LifeBoard.prototype = {
+$.extend(Life.Board.prototype, {
 	createTable: function(height, width) {
 		for (var row = 0; row < height; row++) {
 			var tableRow = this.table[0].insertRow(this.table[0].rows.length);
 			for (var col = 0; col < width; col++) {
-				var cell = tableRow.insertCell(0);
-				var board = this;
-				cell.onclick = function() {
-					debug("cell: onClick, row=" + this.parentNode.rowIndex + ", col=" + this.cellIndex);
-					board.handleClick(this.parentNode.rowIndex, this.cellIndex);
-				};
+				tableRow.insertCell(0);
 			}
 		}
+		return this;
 	},
 	nextGeneration: function() {
 		var changed = false;
@@ -145,7 +149,6 @@ LifeBoard.prototype = {
 	setWrap: function(newWrap) {
 		if (newWrap != this.wrap) {
 			this.wrap = newWrap;
-			debug("setWrap: " + this.wrap);
 		}
 		return this;
 	},
@@ -171,9 +174,9 @@ LifeBoard.prototype = {
 		return this;
 	},
 	glider: function(row, col) {
-		//  X 
-		//   X
-		// XXX
+		//  O 
+		//   O
+		// OOO
 		this.current.getCell(row + 0, col + 0).setLife(false);
 		this.current.getCell(row + 1, col + 0).setLife(true);
 		this.current.getCell(row + 2, col + 0).setLife(false);
@@ -190,4 +193,4 @@ LifeBoard.prototype = {
 	handleClick: function(row, col) {
 		this.current.getCell(row, col).toggleLife();
 	}
-};
+});
