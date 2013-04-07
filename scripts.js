@@ -31,9 +31,11 @@
 		boardTable.find('td').on('click', function() {
 			board.handleClick(this.parentNode.rowIndex, this.cellIndex);
 		});
-		speedSlider.slider({ min: 0, max: 1000, stop: function() {
+		function updateDelay() {
 			board.setDelay(speedSlider.slider("option", "max") - speedSlider.slider("option", "value"));
-		} });
+		}
+		speedSlider.slider({ min: 0, max: 1000, value: 500, stop: updateDelay });
+		updateDelay();
 		board.cannedShape(0, 0, 'glider gun');
 	});
 })(jQuery);
