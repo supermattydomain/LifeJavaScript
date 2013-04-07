@@ -1,22 +1,42 @@
 table.LifeBoard {
 	position: relative;
 	clear: both;
-	width: 300px;
-	height: 300px;
+	width: 480px;
+	height: 480px;
 	padding: 0px;
 	border-width: 0px;
 	border-collapse: collapse;
 	empty-cells: show;
 }
+table.LifeBoard td {
+	padding: 0;
+	margin: 0;
+}
 table.LifeBoard td.Alive {
 	background-color: #00ff00;
+	background:         radial-gradient(circle closest-side, #00ff00 0%, #00ff00 20%, #000000 100%);
+	background:      -o-radial-gradient(circle closest-side, #00ff00 0%, #00ff00 20%, #000000 100%);
+	background:    -moz-radial-gradient(circle closest-side, #00ff00 0%, #00ff00 20%, #000000 100%);
+	background: -webkit-radial-gradient(circle closest-side, #00ff00 0%, #00ff00 20%, #000000 100%);
 }
 table.LifeBoard td.Dead {
 	background-color: #000000;
 }
 table.LifeBoard td.Alive:hover {
-	background-color: #ffff00;
+	background-color: #660000;
+	background:         radial-gradient(circle closest-side, #660000 0%, #660000 20%, #000000 100%);
+	background:      -o-radial-gradient(circle closest-side, #660000 0%, #660000 20%, #000000 100%);
+	background:    -moz-radial-gradient(circle closest-side, #660000 0%, #660000 20%, #000000 100%);
+	background: -webkit-radial-gradient(circle closest-side, #660000 0%, #660000 20%, #000000 100%);
 }
 table.LifeBoard td.Dead:hover {
-	background-color: #ff0000;
+	background-color: #ffff00;
+	background:         radial-gradient(circle closest-side, #ffff00 0%, #ffff00 20%, #000000 100%);
+	background:      -o-radial-gradient(circle closest-side, #ffff00 0%, #ffff00 20%, #000000 100%);
+	background:    -moz-radial-gradient(circle closest-side, #ffff00 0%, #ffff00 20%, #000000 100%);
+	background: -webkit-radial-gradient(circle closest-side, #ffff00 0%, #ffff00 20%, #000000 100%);
+}
+#speedSlider {
+	width: 300px;
+	margin: 10px;
 }
