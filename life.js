@@ -143,7 +143,7 @@ $.extend(Life.Board.prototype, {
 			this.current = this.next;
 			this.next = temp;
 		} else {
-			debug('Stable');
+			// debug('Stable');
 		}
 		return changed;
 	},
@@ -218,11 +218,28 @@ $.extend(Life.Board.prototype, {
 		}
 		return this;
 	},
-	toggleRunning: function(delay) {
+	toggleRunning: function() {
 		if (this.isRunning()) {
 			this.stop();
 		} else {
 			this.start();
+		}
+		return this;
+	},
+	setDelay: function(newDelay) {
+		var that = this, running;
+		if (this.interval) {
+			clearInterval(this.interval);
+			this.interval = undefined;
+			running = true;
+		} else {
+			running = false;
+		}
+		this.delay = newDelay;
+		if (running) {
+			this.interval = setInterval(function() {
+				that.tick();
+			}, this.delay);
 		}
 		return this;
 	}
