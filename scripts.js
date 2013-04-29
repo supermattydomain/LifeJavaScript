@@ -8,6 +8,7 @@
 			boardTable = $('table.LifeBoard'),
 			speedSlider = $('#speedSlider'),
 			board = new Life.Board(boardTable);
+		$('button, input[type="button"], input[type="checkbox"]').button();
 		checkboxWrap.on('click', function() {
 			board.toggleWrap();
 		});
